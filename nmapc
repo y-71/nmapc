@@ -1,0 +1,30 @@
+#!/bin/bash
+url=$1
+
+# Check if the url variable is empty
+if [ -z "$url" ]; then
+    echo "Usage: nmpac <target_url>"
+    exit 1
+fi
+
+base_directory=~/.nmap
+mkdir -p $base_directory
+
+output_file="$base_directory/$url"
+
+# Check if the output file already exists
+if [ -e "$output_file" ]; then
+    echo "The file '$output_file' already exists. Do you want to override it? (y/n)"
+    read -r response
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        echo "Overriding '$output_file'"
+    else
+        echo "Exiting without overriding."
+        exit 0
+    fi
+fi
+
+# Run the nmap command and save the output
+nmap -sV -sC -p- -T4 $url | tee "$output_file"
+
+
